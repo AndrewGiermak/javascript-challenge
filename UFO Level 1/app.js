@@ -11,31 +11,53 @@ function NewTable(tableData) {
     // Loop and append rows and cells 
   tableData.forEach((dataRow) => {
     var row = tbody.append("tr");
-   Object.values(dataRow).forEach((val) => {
+   Object.entries(dataRow).forEach(([key, value]) => {
      var cell = row.append("td");
-       cell.text(val);
-     }
-   );
+       cell.html(value);
+     });
  });
 }
 
-// Function to search the table by date/time
-function SearchTable() {
-    // Prevent Refresh 
-    d3.event.preventDefault();
-    // Get the datetime value entered by user
-    var date = d3.select("#datetime").property("value");
-    let searchData = tableData;
-    // Filter by datetime
-    if (date) {
-      searchData = searchData.filter(row => row.datetime === date);
-    }
-   // Build table based on search data
-    NewTable(searchData);
-  }
-  // Event statement for button click 
-  d3.selectAll("#filter-btn").on("click", SearchTable;
+
+  // clear the table for new data
+  function clearTable() {
+    d3.select("tbody")
+      .selectAll("tr").remove()
+      .selectAll("td").remove();
+  };
   
-  // Default Loading Page 
-  NewTable(tableData);
+  // initial display of all UFO sightings
+  console.log(tableData);
+  tableDisplay(tableData);
   
+  // 'Filter Table' button
+  var button = d3.select("#filter-btn");
+
+
+// filter the database and display
+button.on("click", function(event) {
+  d3.event.preventDefault();
+  clearTable();
+  var dateInput = d3.select("#datetime").property("value");
+  
+  if (dateInput.trim() === "" ) {
+    // display the whole database if the date field has no date
+    var filteredData = tableData;
+  } else {
+    // otherwise, display the filtered dataset  
+    var filteredData = tableData.filter(tableData => 
+      tableData.datetime === dateInput.trim());
+  };
+
+  // display message if no records found
+  if (filteredData.length == 0) {
+    d3.select("tbody")
+      .append("tr")
+      .append("td")
+        .attr("colspan", 7)
+        .html("<h4>No Records Found</h4>");
+  };
+
+  console.log(filteredData);
+  tableDisplay(filteredData);
+});
